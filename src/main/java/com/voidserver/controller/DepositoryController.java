@@ -36,6 +36,13 @@ public class DepositoryController {
 
     }
 
+
+    /**
+     * 根据前端传过来的页码来返回数据
+     *
+     * @param currentPage
+     * @return
+     */
     @GetMapping("/depository")
     public Result depository(Integer currentPage) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -44,6 +51,15 @@ public class DepositoryController {
         return Result.succ(pageData);
     }
 
+    /**
+     * 根据前端传过来的页码，选择的物品类别，仓库的地址和名字的关键字来返回数据
+     *
+     * @param currentPage
+     * @param searchCate
+     * @param searchAddress
+     * @param searchName
+     * @return
+     */
     @GetMapping("/depository/search")
     public Result search(Integer currentPage, String searchCate, String searchAddress, String searchName) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
