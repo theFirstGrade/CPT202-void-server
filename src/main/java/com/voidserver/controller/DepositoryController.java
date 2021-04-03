@@ -8,11 +8,7 @@ import com.voidserver.common.Result;
 import com.voidserver.entity.Depository;
 import com.voidserver.service.DepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -79,5 +75,24 @@ public class DepositoryController {
         IPage pageData = depositoryService.page(page, sectionQueryWrapper);
         return Result.succ(pageData);
     }
+
+//    @PostMapping("/depository/edit")
+//    public Result edit(@Validated @RequestBody Blog blog) {
+//        System.out.println(blog.toString());
+//        Blog temp = null;
+//        if (blog.getId() != null) {
+//            temp = blogService.getById(blog.getId());
+//            Assert.isTrue(temp.getUserId() == ShiroUtil.getProfile().getId(), "没有权限编辑");
+//        } else {
+//            temp = new Blog();
+//            temp.setUserId(ShiroUtil.getProfile().getId());
+//            temp.setCreated(LocalDateTime.now());
+//            temp.setStatus(0);
+//        }
+//        BeanUtil.copyProperties(blog, temp, "id", "userId", "created", "status");
+//        blogService.saveOrUpdate(temp);
+//        return Result.succ("操作成功", null);
+//    }
+
 
 }
