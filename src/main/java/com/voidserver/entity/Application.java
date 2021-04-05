@@ -1,7 +1,9 @@
 package com.voidserver.entity;
 
+import cn.hutool.json.JSON;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.Data;
@@ -14,29 +16,36 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author void: ZHENHAO CHEN
- * @since 2021-04-03
+ * @since 2021-04-05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class Depository implements Serializable {
+public class Application implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "productId", type = IdType.AUTO)
+    @TableId(value = "applicationId", type = IdType.AUTO)
+    private Integer applicationId;
+
+    private LocalDateTime date;
+
+    @TableField("userId")
+    private Integer userId;
+
+    private String director;
+
+    private String remark;
+
+    @TableField("productId")
     private Integer productId;
 
     @TableField("productName")
     private String productName;
 
-    @TableField("imageSrc")
-    private String imageSrc;
-
     private String address;
 
-    private Integer stock;
-
-    private String unit;
+    private Integer number;
 
 
 }

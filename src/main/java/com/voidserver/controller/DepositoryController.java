@@ -68,7 +68,7 @@ public class DepositoryController {
         }
 
         if (!searchName.equals("")) {
-            sectionQueryWrapper.like("name", searchName);
+            sectionQueryWrapper.like("productName", searchName);
         }
 
         Page page = new Page(currentPage, 9);
@@ -76,23 +76,6 @@ public class DepositoryController {
         return Result.succ(pageData);
     }
 
-//    @PostMapping("/depository/edit")
-//    public Result edit(@Validated @RequestBody Blog blog) {
-//        System.out.println(blog.toString());
-//        Blog temp = null;
-//        if (blog.getId() != null) {
-//            temp = blogService.getById(blog.getId());
-//            Assert.isTrue(temp.getUserId() == ShiroUtil.getProfile().getId(), "没有权限编辑");
-//        } else {
-//            temp = new Blog();
-//            temp.setUserId(ShiroUtil.getProfile().getId());
-//            temp.setCreated(LocalDateTime.now());
-//            temp.setStatus(0);
-//        }
-//        BeanUtil.copyProperties(blog, temp, "id", "userId", "created", "status");
-//        blogService.saveOrUpdate(temp);
-//        return Result.succ("操作成功", null);
-//    }
 
 
 }
