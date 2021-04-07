@@ -20,5 +20,4 @@ public class OrderDto implements Serializable {
 
     private String productName;
 
-
 }
