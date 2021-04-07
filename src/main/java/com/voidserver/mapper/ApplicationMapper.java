@@ -1,7 +1,7 @@
 package com.voidserver.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.voidserver.entity.Application;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>
@@ -9,7 +9,7 @@ import com.voidserver.entity.Application;
  * </p>
  *
  * @author void: ZHENHAO CHEN
- * @since 2021-04-05
+ * @since 2021-04-06
  */
 public interface ApplicationMapper extends BaseMapper<Application> {
 

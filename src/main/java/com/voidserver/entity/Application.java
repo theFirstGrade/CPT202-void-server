@@ -1,11 +1,12 @@
 package com.voidserver.entity;
 
-import cn.hutool.json.JSON;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -16,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author void: ZHENHAO CHEN
- * @since 2021-04-05
+ * @since 2021-04-06
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,24 +29,31 @@ public class Application implements Serializable {
     @TableId(value = "applicationId", type = IdType.AUTO)
     private Integer applicationId;
 
-    private LocalDateTime date;
-
-    @TableField("userId")
-    private Integer userId;
-
-    private String director;
-
-    private String remark;
-
     @TableField("productId")
     private Integer productId;
 
     @TableField("productName")
     private String productName;
 
-    private String address;
-
     private Integer number;
 
+    private LocalDateTime date;
+
+    private String address;
+
+    @TableField("userId")
+    private Integer userId;
+
+    @TableField("verifyCode")
+    private Integer verifyCode;
+
+    private String director;
+
+    private String remark;
+
+    private String unit;
+
+    @TableLogic
+    private Integer deleted;
 
 }
