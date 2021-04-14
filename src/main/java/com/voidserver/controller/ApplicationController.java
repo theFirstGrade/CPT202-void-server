@@ -99,7 +99,7 @@ public class ApplicationController {
             application.setDeleted(0);
             applications.add(application);
             System.out.println(application);
-            orderMessage.append("{").append(item.getProductName()).append("    ").append(item.getNumber()).append(item.getUnit()).append("    ").append(item.getAddress()).append("}     ");
+            orderMessage.append(item.getProductName()).append("&nbsp;&nbsp;&nbsp;&nbsp;").append(item.getNumber()).append(item.getUnit()).append("&nbsp;&nbsp;&nbsp;&nbsp;").append(item.getAddress()).append("<br/>");
         }
         System.out.println(orderMessage);
         boolean affectRows = applicationService.saveBatch(applications);
@@ -114,7 +114,7 @@ public class ApplicationController {
                 // 设置文件主题
                 mimeMessageHelper.setSubject("您的物资领取验证码");
                 // 设置文件内容 第二个参数设置是否支持html
-                mimeMessageHelper.setText("<b style='color:red'>您的订单：</b><br/>" + orderMessage + "<br/>" + "<b style='color:red'>验证码：</b>" + verifyCode, true);
+                mimeMessageHelper.setText("<b style='color:red'>您的订单：</b><br/>" + orderMessage + "<br/>" + "<b style='color:red'>验证码：</b>" + "<b>" + verifyCode + "</b>", true);
                 // 设置发送到的邮箱
                 mimeMessageHelper.setTo(email);
                 // 设置发送人和配置文件中邮箱一致
@@ -154,19 +154,20 @@ public class ApplicationController {
 
     @CrossOrigin
     @GetMapping("/getApplication/search")
-    public Result search(Integer currentPage, String searchAddress, Integer userId) {
+    public Result search(Integer currentPage, String searchAddress, Integer verifyCode) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         QueryWrapper<Application> sectionQueryWrapper = new QueryWrapper<>();
         if (!searchAddress.equals("全部")) {
             sectionQueryWrapper.eq("address", searchAddress);
         }
 
-        if (userId != null) {
-            sectionQueryWrapper.eq("userId", userId);
+        if (verifyCode != null) {
+            sectionQueryWrapper.eq("verifyCode", verifyCode);
         }
 
         Page page = new Page(currentPage, 9);
         IPage pageData = applicationService.page(page, sectionQueryWrapper);
+
         return Result.succ(pageData);
     }
 
@@ -196,13 +197,13 @@ public class ApplicationController {
         int count = 0;
         if (correctApplication) {
             for (Object applicationId : applicationIds) {
-                count = applicationMapper.deleteById((Serializable) applicationId);
+                count += applicationMapper.deleteById((Serializable) applicationId);
 //                count = applicationMapper.deleteBatchIds(Collections.singletonList((Serializable) applicationIds));
                 System.out.println(count);
             }
         }
 
-        if (count != 0) {
+        if (correctApplication && count == applicationIds.size()) {
             return Result.succ("成功");
         } else {
             return Result.fail("失败");
