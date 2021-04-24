@@ -1,13 +1,16 @@
 package com.voidserver.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.voidserver.common.ApplicationVO;
 import com.voidserver.common.OrderDto;
 import com.voidserver.common.Result;
 import com.voidserver.common.UserDto;
@@ -147,28 +150,47 @@ public class ApplicationController {
     @GetMapping("/getApplication")
     public Result getApplication(Integer currentPage) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
-        Page page = new Page(currentPage, 9);
-        IPage pageData = applicationService.page(page, new QueryWrapper<Application>().orderByDesc("applicationId"));
-        return Result.succ(pageData);
+        Page<ApplicationVO> questionStudent = applicationService.getApplicationUser(new Page<>(currentPage, 9));
+        // 为了获取到user表中的username字段
+//        Map<String, Object> applications = applicationService.getMap(new QueryWrapper<Application>().orderByDesc("applicationId"));
+//
+//        Page page = new Page(currentPage, 9);
+//        IPage pageData = applicationService.page(page, new QueryWrapper<Application>().orderByDesc("applicationId"));
+        return Result.succ(questionStudent);
     }
 
+    // @Param("date") String date,@Param("type") String type
     @CrossOrigin
     @GetMapping("/getApplication/search")
     public Result search(Integer currentPage, String searchAddress, Integer verifyCode) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
-        QueryWrapper<Application> sectionQueryWrapper = new QueryWrapper<>();
-        if (!searchAddress.equals("全部")) {
-            sectionQueryWrapper.eq("address", searchAddress);
+        Page<ApplicationVO> questionStudent;
+        if (searchAddress.equals("全部")) {
+            questionStudent = applicationService.getApplicationUser4(new Page<>(currentPage, 9), verifyCode);
+        } else {
+            if (verifyCode != null) {
+                questionStudent = applicationService.getApplicationUser2(new Page<>(currentPage, 9), searchAddress, verifyCode);
+            } else {
+                questionStudent = applicationService.getApplicationUser3(new Page<>(currentPage, 9), searchAddress);
+            }
         }
 
-        if (verifyCode != null) {
-            sectionQueryWrapper.eq("verifyCode", verifyCode);
-        }
+        return Result.succ(questionStudent);
 
-        Page page = new Page(currentPage, 9);
-        IPage pageData = applicationService.page(page, sectionQueryWrapper);
 
-        return Result.succ(pageData);
+//        QueryWrapper<Application> sectionQueryWrapper = new QueryWrapper<>();
+//        if (!searchAddress.equals("全部")) {
+//            sectionQueryWrapper.eq("address", searchAddress);
+//        }
+//
+//        if (verifyCode != null) {
+//            sectionQueryWrapper.eq("verifyCode", verifyCode);
+//        }
+//
+//        Page page = new Page(currentPage, 9);
+//        IPage pageData = applicationService.page(page, sectionQueryWrapper);
+//
+//        return Result.succ(pageData);
     }
 
     @CrossOrigin
