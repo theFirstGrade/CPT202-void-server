@@ -38,5 +38,6 @@ public class Depository implements Serializable {
 
     private String unit;
 
+    private String category;
 
 }

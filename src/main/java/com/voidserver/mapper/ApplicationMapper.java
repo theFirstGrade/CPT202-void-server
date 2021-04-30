@@ -19,16 +19,16 @@ import java.util.List;
  */
 public interface ApplicationMapper extends BaseMapper<Application> {
 
-    @Select("SELECT application.*,user.`username` FROM application,user WHERE application.deleted=0 and application.userId=user.id")
+    @Select("SELECT application.*,user.`username` FROM application,user WHERE application.deleted=0 and application.userId=user.id order by application.applicationId desc")
     List<ApplicationVO> getApplicationUser(Page page);
 
-    @Select("SELECT application.*,user.`username` FROM application,user WHERE application.deleted=0 and application.userId=user.id and application.address='${searchAddress}' and application.verifyCode=${verifyCode}")
+    @Select("SELECT application.*,user.`username` FROM application,user WHERE application.deleted=0 and application.userId=user.id and application.address='${searchAddress}' and application.verifyCode='${verifyCode}' order by application.applicationId desc")
     List<ApplicationVO> getApplicationUser2(Page page, @Param("searchAddress") String searchAddress, @Param("verifyCode") Integer verifyCode);
 
-    @Select("SELECT application.*,user.`username` FROM application,user WHERE application.deleted=0 and application.userId=user.id and application.address='${searchAddress}'")
+    @Select("SELECT application.*,user.`username` FROM application,user WHERE application.deleted=0 and application.userId=user.id and application.address='${searchAddress}' order by application.applicationId desc")
     List<ApplicationVO> getApplicationUser3(Page page, @Param("searchAddress") String searchAddress);
 
-    @Select("SELECT application.*,user.`username` FROM application,user WHERE application.deleted=0 and application.userId=user.id and application.verifyCode=${verifyCode}")
+    @Select("SELECT application.*,user.`username` FROM application,user WHERE application.deleted=0 and application.userId=user.id and application.verifyCode='${verifyCode}' order by application.applicationId desc")
     List<ApplicationVO> getApplicationUser4(Page page, @Param("verifyCode") Integer verifyCode);
 // @Param("date") String date,@Param("type") String type
 }

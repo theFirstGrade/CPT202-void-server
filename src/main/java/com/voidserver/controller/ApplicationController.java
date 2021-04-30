@@ -15,9 +15,12 @@ import com.voidserver.common.OrderDto;
 import com.voidserver.common.Result;
 import com.voidserver.common.UserDto;
 import com.voidserver.entity.Application;
+import com.voidserver.entity.Depository;
+import com.voidserver.entity.RentalDepository;
 import com.voidserver.mapper.ApplicationMapper;
 import com.voidserver.mapper.UserMapper;
 import com.voidserver.service.ApplicationService;
+import com.voidserver.service.DepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -46,6 +49,9 @@ public class ApplicationController {
 
     @Autowired
     ApplicationService applicationService;
+
+    @Autowired
+    DepositoryService depositoryService;
 
     @Resource
     ApplicationMapper applicationMapper;
@@ -103,6 +109,12 @@ public class ApplicationController {
             applications.add(application);
             System.out.println(application);
             orderMessage.append(item.getProductName()).append("&nbsp;&nbsp;&nbsp;&nbsp;").append(item.getNumber()).append(item.getUnit()).append("&nbsp;&nbsp;&nbsp;&nbsp;").append(item.getAddress()).append("<br/>");
+            Depository rd = depositoryService.getById(item.getProductId());
+            Integer stock = rd.getStock();
+            rd.setStock(stock - item.getNumber());
+            depositoryService.update(rd, new QueryWrapper<Depository>().eq("productId", item.getProductId()));
+
+            //            rentalDepositoryService.update(rd, new QueryWrapper<RentalDepository>().eq("depository_id", id));
         }
         System.out.println(orderMessage);
         boolean affectRows = applicationService.saveBatch(applications);
@@ -165,7 +177,7 @@ public class ApplicationController {
     public Result search(Integer currentPage, String searchAddress, Integer verifyCode) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         Page<ApplicationVO> questionStudent;
-        if (searchAddress.equals("全部")) {
+        if (searchAddress.equals("全部") || searchAddress.equals("All")) {
             questionStudent = applicationService.getApplicationUser4(new Page<>(currentPage, 9), verifyCode);
         } else {
             if (verifyCode != null) {

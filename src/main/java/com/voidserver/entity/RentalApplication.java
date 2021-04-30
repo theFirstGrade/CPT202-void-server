@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -41,7 +43,7 @@ public class RentalApplication implements Serializable {
     @TableField("verifyCode")
     private Integer verifyCode;
 
-    private String rentalDay;
+    private Integer rentalDay;
 
     private LocalDate expired;
 
@@ -49,6 +51,7 @@ public class RentalApplication implements Serializable {
 
     private String remark;
 
+    @TableLogic
     private Integer deleted;
 
 
