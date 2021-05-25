@@ -3,6 +3,8 @@ package com.voidserver.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.voidserver.common.ApplicationVO;
 import com.voidserver.common.RentalApplicationVO;
+import com.voidserver.common.UserApplication;
+import com.voidserver.common.UserRentalApplication;
 import com.voidserver.entity.RentalApplication;
 import com.voidserver.mapper.RentalApplicationMapper;
 import com.voidserver.service.RentalApplicationService;
@@ -39,6 +41,26 @@ public class RentalApplicationServiceImpl extends ServiceImpl<RentalApplicationM
     @Override
     public Page<RentalApplicationVO> getApplicationUser4(Page<RentalApplicationVO> page, @Param("verifyCode") Integer verifyCode) {
         return page.setRecords(this.baseMapper.getApplicationUser4(page, verifyCode));
+    }
+
+    @Override
+    public Page<UserRentalApplication> getUserRentalApplication1(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("searchAddress") String searchAddress, @Param("isCompleted") Integer isCompleted) {
+        return page.setRecords(this.baseMapper.getUserRentalApplication1(page, id, searchAddress, isCompleted));
+    }
+
+    @Override
+    public Page<UserRentalApplication> getUserRentalApplication2(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("isCompleted") Integer isCompleted) {
+        return page.setRecords(this.baseMapper.getUserRentalApplication2(page, id, isCompleted));
+    }
+
+    @Override
+    public Page<UserRentalApplication> getUserRentalApplication3(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("searchAddress") String searchAddress, @Param("isCompleted") Integer isCompleted) {
+        return page.setRecords(this.baseMapper.getUserRentalApplication3(page, id, searchAddress, isCompleted));
+    }
+
+    @Override
+    public Page<UserRentalApplication> getUserRentalApplication4(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("isCompleted") Integer isCompleted) {
+        return page.setRecords(this.baseMapper.getUserRentalApplication4(page, id, isCompleted));
     }
 
 

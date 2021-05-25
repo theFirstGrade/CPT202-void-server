@@ -15,6 +15,7 @@ import com.voidserver.entity.User;
 import com.voidserver.service.DepositoryService;
 import com.voidserver.service.RentalDepositoryService;
 import com.voidserver.service.RentalProductService;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +47,7 @@ public class RentalProductController {
     @Autowired
     RentalDepositoryService rentalDepositoryService;
 
+    @RequiresAuthentication
     @CrossOrigin
     @GetMapping("/getRentalProducts")
     public Result getRentalProducts(Integer currentPage, String searchCate, String searchAddress, String searchName) {
@@ -55,15 +57,15 @@ public class RentalProductController {
         if (searchCate.equals("全部") || searchCate.equals("All")) {
             if (searchName.equals("")) {
                 // SELECT from a.category=searchCate and a.name=
-                productDepository = rentalProductService.getRentalProductDepository1(new Page<>(currentPage, 9), searchAddress);
+                productDepository = rentalProductService.getRentalProductDepository1(new Page<>(currentPage, 5), searchAddress);
             } else {
-                productDepository = rentalProductService.getRentalProductDepository2(new Page<>(currentPage, 9), searchAddress, searchName);
+                productDepository = rentalProductService.getRentalProductDepository2(new Page<>(currentPage, 5), searchAddress, searchName);
             }
         } else {
             if (searchName.equals("")) {
-                productDepository = rentalProductService.getRentalProductDepository3(new Page<>(currentPage, 9), searchAddress, searchCate);
+                productDepository = rentalProductService.getRentalProductDepository3(new Page<>(currentPage, 5), searchAddress, searchCate);
             } else {
-                productDepository = rentalProductService.getRentalProductDepository4(new Page<>(currentPage, 9), searchAddress, searchCate, searchName);
+                productDepository = rentalProductService.getRentalProductDepository4(new Page<>(currentPage, 5), searchAddress, searchCate, searchName);
             }
         }
 
@@ -76,6 +78,7 @@ public class RentalProductController {
      * @param str
      * @return
      */
+    @RequiresAuthentication
     @CrossOrigin
     @PostMapping("/rentalProduct/add")
     public Result productAdd(@RequestBody String str) {
@@ -111,6 +114,7 @@ public class RentalProductController {
 //        return Result.succ("成功");
 //    }
 
+    @RequiresAuthentication
     @CrossOrigin
     @PostMapping("/upload")
     public Result upload(HttpServletRequest request) throws IOException {
@@ -146,6 +150,7 @@ public class RentalProductController {
     }
 
     //String productName, String productImage, String productUnit, String productCate, String productAddress
+    @RequiresAuthentication
     @CrossOrigin
     @PostMapping("/addRentalProduct")
     public Result addRentalProduct(@RequestBody String str) {

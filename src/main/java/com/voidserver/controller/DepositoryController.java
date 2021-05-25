@@ -11,6 +11,7 @@ import com.voidserver.entity.Depository;
 import com.voidserver.entity.RentalDepository;
 import com.voidserver.entity.RentalProduct;
 import com.voidserver.service.DepositoryService;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,10 +44,11 @@ public class DepositoryController {
      * @param currentPage
      * @return
      */
+    @RequiresAuthentication
     @GetMapping("/depository")
     public Result depository(Integer currentPage) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
-        Page page = new Page(currentPage, 9);
+        Page page = new Page(currentPage, 5);
         IPage pageData = depositoryService.page(page, new QueryWrapper<Depository>().orderByAsc("productId"));
         return Result.succ(pageData);
     }
@@ -60,6 +62,7 @@ public class DepositoryController {
      * @param searchName
      * @return
      */
+    @RequiresAuthentication
     @GetMapping("/depository/search")
     public Result search(Integer currentPage, String searchCate, String searchAddress, String searchName) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -75,7 +78,7 @@ public class DepositoryController {
             sectionQueryWrapper.like("productName", searchName);
         }
 
-        Page page = new Page(currentPage, 9);
+        Page page = new Page(currentPage, 5);
         IPage pageData = depositoryService.page(page, sectionQueryWrapper);
         return Result.succ(pageData);
     }
@@ -94,11 +97,12 @@ public class DepositoryController {
 //        return Result.succ("成功");
 //    }=================
 
+    @RequiresAuthentication
     @CrossOrigin
     @GetMapping("/getProducts")
     public Result getProducts(Integer currentPage, String searchCate, String searchAddress, String searchName) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
-        Page<RentalProductVO> productDepository;
+//        Page<RentalProductVO> productDepository;
         QueryWrapper<Depository> sectionQueryWrapper = new QueryWrapper<Depository>().eq("address", searchAddress);
         if (!searchCate.equals("全部") && !searchCate.equals("All")) {
             sectionQueryWrapper.eq("category", searchCate);
@@ -108,11 +112,12 @@ public class DepositoryController {
             sectionQueryWrapper.like("productName", searchName);
         }
 
-        Page page = new Page(currentPage, 9);
+        Page page = new Page(currentPage, 5);
         IPage pageData = depositoryService.page(page, sectionQueryWrapper);
         return Result.succ(pageData);
     }
 
+    @RequiresAuthentication
     @CrossOrigin
     @PostMapping("/stock/change")
     public Result stockChange(@RequestBody String str) {
@@ -128,6 +133,7 @@ public class DepositoryController {
         return Result.fail("失败");
     }
 
+    @RequiresAuthentication
     @CrossOrigin
     @PostMapping("/addProduct")
     public Result addProduct(@RequestBody String str) {

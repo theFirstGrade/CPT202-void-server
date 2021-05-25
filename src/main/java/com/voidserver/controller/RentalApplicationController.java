@@ -14,6 +14,7 @@ import com.voidserver.mapper.ApplicationMapper;
 import com.voidserver.mapper.RentalApplicationMapper;
 import com.voidserver.service.RentalApplicationService;
 import com.voidserver.service.RentalDepositoryService;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -51,6 +52,7 @@ public class RentalApplicationController {
     @Resource
     RentalApplicationMapper rentalApplicationMapper;
 
+    @RequiresAuthentication
     @CrossOrigin
     @GetMapping("/getRentalApplication")
     public Result getRentalApplication(Integer currentPage) {
@@ -60,6 +62,7 @@ public class RentalApplicationController {
         return Result.succ(questionStudent);
     }
 
+    @RequiresAuthentication
     @CrossOrigin
     @GetMapping("/getRentalApplication/search")
     public Result search(Integer currentPage, String searchAddress, Integer verifyCode) {
@@ -77,6 +80,35 @@ public class RentalApplicationController {
         return Result.succ(questionStudent);
     }
 
+    @RequiresAuthentication
+    @CrossOrigin
+    @GetMapping("/getPersonalRentalApplication")
+    public Result getPersonalApplication(Integer currentPage, Integer id, String searchAddress, String searchCompleted) {
+        if (currentPage == null || currentPage < 1) currentPage = 1;
+        Page<UserRentalApplication> userRentalApplicationPage = null;
+//        Integer isCompleted = "completed".equals(searchCompleted) ? 1 : 0;
+        if (!searchAddress.equals("All")) {
+            if ("completed".equals(searchCompleted)) {
+                userRentalApplicationPage = rentalApplicationService.getUserRentalApplication1(new Page<>(currentPage, 9), id, searchAddress, 0);
+            } else {
+                userRentalApplicationPage = rentalApplicationService.getUserRentalApplication3(new Page<>(currentPage, 9), id, searchAddress, 0);
+            }
+        } else {
+            if ("completed".equals(searchCompleted)) {
+
+                userRentalApplicationPage = rentalApplicationService.getUserRentalApplication2(new Page<>(currentPage, 9), id, 0);
+            } else {
+                userRentalApplicationPage = rentalApplicationService.getUserRentalApplication4(new Page<>(currentPage, 9), id, 0);
+
+            }
+        }
+
+        return Result.succ(userRentalApplicationPage);
+
+    }
+
+
+    @RequiresAuthentication
     @CrossOrigin
     @PostMapping("/verifyRentalApplication")
     public Result verifyApplication(@RequestBody String str) {
@@ -117,6 +149,7 @@ public class RentalApplicationController {
     }
 
 
+    @RequiresAuthentication
     @CrossOrigin
     @PostMapping("/rentalApplication")
     public Result makeRentalApplication(@RequestBody String str) {

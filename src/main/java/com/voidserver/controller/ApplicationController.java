@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.voidserver.common.ApplicationVO;
 import com.voidserver.common.OrderDto;
 import com.voidserver.common.Result;
+import com.voidserver.common.UserApplication;
 import com.voidserver.common.UserDto;
 import com.voidserver.entity.Application;
 import com.voidserver.entity.Depository;
@@ -21,10 +22,12 @@ import com.voidserver.mapper.ApplicationMapper;
 import com.voidserver.mapper.UserMapper;
 import com.voidserver.service.ApplicationService;
 import com.voidserver.service.DepositoryService;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -60,6 +63,7 @@ public class ApplicationController {
     private JavaMailSenderImpl javaMailSenderImpl;
 
 
+    @RequiresAuthentication
     @GetMapping("/sendEmail")
     public void sendSimpleMail() {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -76,6 +80,7 @@ public class ApplicationController {
     }
 
 
+    @RequiresAuthentication
     @CrossOrigin
     @PostMapping("/application")
     public Result makeApplication(@RequestBody String str) {
@@ -158,6 +163,7 @@ public class ApplicationController {
         }
     }
 
+    @RequiresAuthentication
     @CrossOrigin
     @GetMapping("/getApplication")
     public Result getApplication(Integer currentPage) {
@@ -172,6 +178,7 @@ public class ApplicationController {
     }
 
     // @Param("date") String date,@Param("type") String type
+    @RequiresAuthentication
     @CrossOrigin
     @GetMapping("/getApplication/search")
     public Result search(Integer currentPage, String searchAddress, Integer verifyCode) {
@@ -205,25 +212,51 @@ public class ApplicationController {
 //        return Result.succ(pageData);
     }
 
+    @RequiresAuthentication
+    @CrossOrigin
+    @GetMapping("/getPersonalApplication")
+    public Result getPersonalApplication(Integer currentPage, Integer id, String searchAddress, String searchCompleted) {
+        if (currentPage == null || currentPage < 1) currentPage = 1;
+        Page<UserApplication> userApplicationPage = null;
+        Integer isCompleted = "completed".equals(searchCompleted) ? 1 : 0;
+        if (!searchAddress.equals("All")) {
+            userApplicationPage = applicationService.getUserApplication1(new Page<>(currentPage, 9), id, searchAddress, isCompleted);
+        }else{
+            userApplicationPage= applicationService.getUserApplication2(new Page<>(currentPage, 9), id, isCompleted);
+        }
+
+        return Result.succ(userApplicationPage);
+
+    }
+
+
+    @RequiresAuthentication
     @CrossOrigin
     @PostMapping("/verifyApplication")
     public Result verifyApplication(@RequestBody String str) {
+        System.out.println("我是verify！！！！！！！！！！！！！！！！！！！");
         boolean correctApplication = true;
         // 暂时没考虑传null值
         Integer verifyCode = Integer.parseInt(JSON.parseObject(str).get("verifyCode").toString());
         JSONArray applicationIds = JSON.parseArray(JSON.parseObject(str).getString("applicationId"));
         System.out.println(applicationIds);
         if (applicationIds.size() <= 0) {
+            System.out.println("我是verify11111111111111111111111");
             correctApplication = false;
+            return Result.fail("失败");
         } else {
             for (Object applicationId : applicationIds) {
                 Application application = applicationService.getById((Serializable) applicationId);
                 if (application != null) {
                     if (!application.getVerifyCode().equals(verifyCode)) {
+                        System.out.println("我是verify22222222222222222222");
                         correctApplication = false;
+                        return Result.fail("失败");
                     }
                 } else {
+                    System.out.println("我是verify33333333333333333333333");
                     correctApplication = false;
+                    return Result.fail("失败");
                 }
             }
         }

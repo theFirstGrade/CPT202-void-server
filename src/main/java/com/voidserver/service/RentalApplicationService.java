@@ -3,6 +3,8 @@ package com.voidserver.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.voidserver.common.ApplicationVO;
 import com.voidserver.common.RentalApplicationVO;
+import com.voidserver.common.UserApplication;
+import com.voidserver.common.UserRentalApplication;
 import com.voidserver.entity.RentalApplication;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.ibatis.annotations.Param;
@@ -25,5 +27,11 @@ public interface RentalApplicationService extends IService<RentalApplication> {
 
     Page<RentalApplicationVO> getApplicationUser4(Page<RentalApplicationVO> page, @Param("verifyCode") Integer verifyCode);
 
+    Page<UserRentalApplication> getUserRentalApplication1(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("searchAddress") String searchAddress, @Param("isCompleted") Integer isCompleted);
 
+    Page<UserRentalApplication> getUserRentalApplication2(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("isCompleted") Integer isCompleted);
+
+    Page<UserRentalApplication> getUserRentalApplication3(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("searchAddress") String searchAddress, @Param("isCompleted") Integer isCompleted);
+
+    Page<UserRentalApplication> getUserRentalApplication4(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("isCompleted") Integer isCompleted);
 }

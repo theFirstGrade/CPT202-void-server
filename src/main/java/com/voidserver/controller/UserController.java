@@ -8,6 +8,7 @@ import com.voidserver.common.LoginDto;
 import com.voidserver.common.Result;
 import com.voidserver.entity.User;
 import com.voidserver.service.UserService;
+import com.voidserver.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 public class UserController {
 
     @Autowired
+    JwtUtils jwtUtils;
+
+    @Autowired
     UserService userService;
 
 
@@ -36,11 +40,11 @@ public class UserController {
         User user = userService.getOne(new QueryWrapper<User>().eq("username", loginDto.getUsername()));
 //        Assert.notNull(user, "用户不存在");
         if (user == null || !user.getPassword().equals(loginDto.getPassword())) {
-            return Result.fail("用户名或密码错误！");
+            return Result.fail("wrong username or password！");
         }
-//        String jwt = jwtUtils.generateToken(user.getId());
-//        response.setHeader("Authorization", jwt);
-//        response.setHeader("Access-Control-Expose-Headers", "Authorization");
+        String jwt = jwtUtils.generateToken(user.getId());
+        response.setHeader("Authorization", jwt);
+        response.setHeader("Access-Control-Expose-Headers", "Authorization");
         // 用户可以另一个接口
         return Result.succ(MapUtil.builder()
                 .put("id", user.getId())
