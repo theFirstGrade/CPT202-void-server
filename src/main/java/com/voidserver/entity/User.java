@@ -44,5 +44,10 @@ public class User implements Serializable {
 
     private LocalDateTime lastLogin;
 
+    private String verifyCode;
+
+    private String building;
+
+    private String room;
 
 }
