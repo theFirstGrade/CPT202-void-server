@@ -27,6 +27,14 @@ public interface RentalApplicationService extends IService<RentalApplication> {
 
     Page<RentalApplicationVO> getApplicationUser4(Page<RentalApplicationVO> page, @Param("verifyCode") Integer verifyCode);
 
+    Page<RentalApplicationVO> getReturnApplicationUser1(Page<RentalApplicationVO> page);
+
+    Page<RentalApplicationVO> getReturnApplicationUser2(Page<RentalApplicationVO> page, @Param("searchAddress") String searchAddress, @Param("verifyCode") Integer verifyCode);
+
+    Page<RentalApplicationVO> getReturnApplicationUser3(Page<RentalApplicationVO> page, @Param("searchAddress") String searchAddress);
+
+    Page<RentalApplicationVO> getReturnApplicationUser4(Page<RentalApplicationVO> page, @Param("verifyCode") Integer verifyCode);
+
     Page<UserRentalApplication> getUserRentalApplication1(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("searchAddress") String searchAddress, @Param("isCompleted") Integer isCompleted);
 
     Page<UserRentalApplication> getUserRentalApplication2(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("isCompleted") Integer isCompleted);

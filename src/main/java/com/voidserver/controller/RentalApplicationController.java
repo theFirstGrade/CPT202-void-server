@@ -14,6 +14,7 @@ import com.voidserver.mapper.ApplicationMapper;
 import com.voidserver.mapper.RentalApplicationMapper;
 import com.voidserver.service.RentalApplicationService;
 import com.voidserver.service.RentalDepositoryService;
+import com.voidserver.utils.ShiroUtil;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -57,9 +58,19 @@ public class RentalApplicationController {
     @GetMapping("/getRentalApplication")
     public Result getRentalApplication(Integer currentPage) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
-        Page<RentalApplicationVO> questionStudent = rentalApplicationService.getApplicationUser(new Page<>(currentPage, 9));
+        Page<RentalApplicationVO> page = rentalApplicationService.getApplicationUser(new Page<>(currentPage, 9));
 
-        return Result.succ(questionStudent);
+        return Result.succ(page);
+    }
+
+    @RequiresAuthentication
+    @CrossOrigin
+    @GetMapping("/getReturnRentalApplication")
+    public Result getReturnRentalApplication(Integer currentPage) {
+        if (currentPage == null || currentPage < 1) currentPage = 1;
+        Page<RentalApplicationVO> page = rentalApplicationService.getReturnApplicationUser1(new Page<>(currentPage, 9));
+
+        return Result.succ(page);
     }
 
     @RequiresAuthentication
@@ -67,17 +78,35 @@ public class RentalApplicationController {
     @GetMapping("/getRentalApplication/search")
     public Result search(Integer currentPage, String searchAddress, Integer verifyCode) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
-        Page<RentalApplicationVO> questionStudent;
+        Page<RentalApplicationVO> page;
         if (searchAddress.equals("全部") || searchAddress.equals("All")) {
-            questionStudent = rentalApplicationService.getApplicationUser4(new Page<>(currentPage, 9), verifyCode);
+            page = rentalApplicationService.getApplicationUser4(new Page<>(currentPage, 9), verifyCode);
         } else {
             if (verifyCode != null) {
-                questionStudent = rentalApplicationService.getApplicationUser2(new Page<>(currentPage, 9), searchAddress, verifyCode);
+                page = rentalApplicationService.getApplicationUser2(new Page<>(currentPage, 9), searchAddress, verifyCode);
             } else {
-                questionStudent = rentalApplicationService.getApplicationUser3(new Page<>(currentPage, 9), searchAddress);
+                page = rentalApplicationService.getApplicationUser3(new Page<>(currentPage, 9), searchAddress);
             }
         }
-        return Result.succ(questionStudent);
+        return Result.succ(page);
+    }
+
+    @RequiresAuthentication
+    @CrossOrigin
+    @GetMapping("/getReturnRentalApplication/search")
+    public Result returnSearch(Integer currentPage, String searchAddress, Integer verifyCode) {
+        if (currentPage == null || currentPage < 1) currentPage = 1;
+        Page<RentalApplicationVO> page;
+        if (searchAddress.equals("全部") || searchAddress.equals("All")) {
+            page = rentalApplicationService.getReturnApplicationUser4(new Page<>(currentPage, 9), verifyCode);
+        } else {
+            if (verifyCode != null) {
+                page = rentalApplicationService.getReturnApplicationUser2(new Page<>(currentPage, 9), searchAddress, verifyCode);
+            } else {
+                page = rentalApplicationService.getReturnApplicationUser3(new Page<>(currentPage, 9), searchAddress);
+            }
+        }
+        return Result.succ(page);
     }
 
     @RequiresAuthentication
@@ -88,13 +117,13 @@ public class RentalApplicationController {
         Page<UserRentalApplication> userRentalApplicationPage = null;
 //        Integer isCompleted = "completed".equals(searchCompleted) ? 1 : 0;
         if (!searchAddress.equals("All")) {
-            if ("completed".equals(searchCompleted)) {
+            if (!"completed".equals(searchCompleted)) {
                 userRentalApplicationPage = rentalApplicationService.getUserRentalApplication1(new Page<>(currentPage, 9), id, searchAddress, 0);
             } else {
                 userRentalApplicationPage = rentalApplicationService.getUserRentalApplication3(new Page<>(currentPage, 9), id, searchAddress, 0);
             }
         } else {
-            if ("completed".equals(searchCompleted)) {
+            if (!"completed".equals(searchCompleted)) {
 
                 userRentalApplicationPage = rentalApplicationService.getUserRentalApplication2(new Page<>(currentPage, 9), id, 0);
             } else {
@@ -105,6 +134,21 @@ public class RentalApplicationController {
 
         return Result.succ(userRentalApplicationPage);
 
+    }
+
+    @RequiresAuthentication
+    @CrossOrigin
+    @PostMapping("/cancelRentalApplication")
+    public Result cancelRentalApplication(@RequestBody String str) {
+        Integer applicationId = Integer.parseInt(JSON.parseObject(str).get("applicationId").toString());
+        RentalApplication application = rentalApplicationService.getById(applicationId);
+        if (application != null && (long) application.getUserId() == ShiroUtil.getProfile().getId() && application.getDeleted() == 0) {
+            application.setDeleted(5);
+            rentalApplicationService.update(application, new QueryWrapper<RentalApplication>().eq("application_id", applicationId));
+            return Result.succ("成功");
+        }
+
+        return Result.fail("失败");
     }
 
 
@@ -135,7 +179,11 @@ public class RentalApplicationController {
         int count = 0;
         if (correctApplication) {
             for (Object applicationId : applicationIds) {
-                count += rentalApplicationMapper.deleteById((Serializable) applicationId);
+//                count += rentalApplicationMapper.deleteById((Serializable) applicationId);
+                RentalApplication application = rentalApplicationService.getById((Serializable) applicationId);
+                application.setDeleted(1);
+                rentalApplicationService.update(application, new QueryWrapper<RentalApplication>().eq("application_id", applicationId));
+                count++;
 //                count = applicationMapper.deleteBatchIds(Collections.singletonList((Serializable) applicationIds));
                 System.out.println(count);
             }
@@ -148,6 +196,50 @@ public class RentalApplicationController {
         }
     }
 
+
+    @RequiresAuthentication
+    @CrossOrigin
+    @PostMapping("/verifyReturnRentalApplication")
+    public Result verifyReturnApplication(@RequestBody String str) {
+        boolean correctApplication = true;
+        // 暂时没考虑传null值
+        Integer verifyCode = Integer.parseInt(JSON.parseObject(str).get("verifyCode").toString());
+        JSONArray applicationIds = JSON.parseArray(JSON.parseObject(str).getString("applicationId"));
+        System.out.println(applicationIds);
+        if (applicationIds.size() <= 0) {
+            correctApplication = false;
+        } else {
+            for (Object applicationId : applicationIds) {
+                RentalApplication application = rentalApplicationService.getById((Serializable) applicationId);
+                if (application != null) {
+                    if (!application.getVerifyCode().equals(verifyCode)) {
+                        correctApplication = false;
+                    }
+                } else {
+                    correctApplication = false;
+                }
+            }
+        }
+
+        int count = 0;
+        if (correctApplication) {
+            for (Object applicationId : applicationIds) {
+//                count += rentalApplicationMapper.deleteById((Serializable) applicationId);
+                RentalApplication application = rentalApplicationService.getById((Serializable) applicationId);
+                application.setDeleted(2);
+                rentalApplicationService.update(application, new QueryWrapper<RentalApplication>().eq("application_id", applicationId));
+                count++;
+//                count = applicationMapper.deleteBatchIds(Collections.singletonList((Serializable) applicationIds));
+                System.out.println(count);
+            }
+        }
+
+        if (correctApplication && count == applicationIds.size()) {
+            return Result.succ("成功");
+        } else {
+            return Result.fail("失败");
+        }
+    }
 
     @RequiresAuthentication
     @CrossOrigin

@@ -56,7 +56,6 @@ public class Application implements Serializable {
 
     private String unit;
 
-    @TableLogic
     private Integer deleted;
 
 }

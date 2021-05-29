@@ -22,6 +22,7 @@ import com.voidserver.mapper.ApplicationMapper;
 import com.voidserver.mapper.UserMapper;
 import com.voidserver.service.ApplicationService;
 import com.voidserver.service.DepositoryService;
+import com.voidserver.utils.ShiroUtil;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -221,12 +222,27 @@ public class ApplicationController {
         Integer isCompleted = "completed".equals(searchCompleted) ? 1 : 0;
         if (!searchAddress.equals("All")) {
             userApplicationPage = applicationService.getUserApplication1(new Page<>(currentPage, 9), id, searchAddress, isCompleted);
-        }else{
-            userApplicationPage= applicationService.getUserApplication2(new Page<>(currentPage, 9), id, isCompleted);
+        } else {
+            userApplicationPage = applicationService.getUserApplication2(new Page<>(currentPage, 9), id, isCompleted);
         }
 
         return Result.succ(userApplicationPage);
 
+    }
+
+    @RequiresAuthentication
+    @CrossOrigin
+    @PostMapping("/cancelApplication")
+    public Result cancelApplication(@RequestBody String str) {
+        Integer applicationId = Integer.parseInt(JSON.parseObject(str).get("applicationId").toString());
+        Application application = applicationService.getById(applicationId);
+        if (application != null && (long) application.getUserId() == ShiroUtil.getProfile().getId() && application.getDeleted() == 0) {
+            application.setDeleted(5);
+            applicationService.update(application, new QueryWrapper<Application>().eq("applicationId", applicationId));
+            return Result.succ("成功");
+        }
+
+        return Result.fail("失败");
     }
 
 
@@ -264,8 +280,12 @@ public class ApplicationController {
         int count = 0;
         if (correctApplication) {
             for (Object applicationId : applicationIds) {
-                count += applicationMapper.deleteById((Serializable) applicationId);
+//                count += applicationMapper.deleteById((Serializable) applicationId);
 //                count = applicationMapper.deleteBatchIds(Collections.singletonList((Serializable) applicationIds));
+                Application application = applicationService.getById((Serializable) applicationId);
+                application.setDeleted(1);
+                applicationService.update(application, new QueryWrapper<Application>().eq("applicationId", applicationId));
+                count++;
                 System.out.println(count);
             }
         }

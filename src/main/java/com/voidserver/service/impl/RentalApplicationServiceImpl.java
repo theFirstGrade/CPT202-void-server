@@ -44,6 +44,26 @@ public class RentalApplicationServiceImpl extends ServiceImpl<RentalApplicationM
     }
 
     @Override
+    public Page<RentalApplicationVO> getReturnApplicationUser1(Page<RentalApplicationVO> page) {
+        return page.setRecords(this.baseMapper.getReturnApplicationUser1(page));
+    }
+
+    @Override
+    public Page<RentalApplicationVO> getReturnApplicationUser2(Page<RentalApplicationVO> page, @Param("searchAddress") String searchAddress, @Param("verifyCode") Integer verifyCode) {
+        return page.setRecords(this.baseMapper.getReturnApplicationUser2(page, searchAddress, verifyCode));
+    }
+
+    @Override
+    public Page<RentalApplicationVO> getReturnApplicationUser3(Page<RentalApplicationVO> page, @Param("searchAddress") String searchAddress) {
+        return page.setRecords(this.baseMapper.getReturnApplicationUser3(page, searchAddress));
+    }
+
+    @Override
+    public Page<RentalApplicationVO> getReturnApplicationUser4(Page<RentalApplicationVO> page, @Param("verifyCode") Integer verifyCode) {
+        return page.setRecords(this.baseMapper.getReturnApplicationUser4(page, verifyCode));
+    }
+
+    @Override
     public Page<UserRentalApplication> getUserRentalApplication1(Page<UserRentalApplication> page, @Param("id") Integer id, @Param("searchAddress") String searchAddress, @Param("isCompleted") Integer isCompleted) {
         return page.setRecords(this.baseMapper.getUserRentalApplication1(page, id, searchAddress, isCompleted));
     }
