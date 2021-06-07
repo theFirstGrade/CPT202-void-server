@@ -26,3 +26,5 @@ oEnter “npm install” to install related libraries.
 oEnter “npm start” to run the project, the web page will automatically open in the browser.
 You can use this account to login: username: admin  password: admin
 If you want to test the e-mail and verification code function, you can add a new tuple in the user table in MySQL with your own e-mail 
+
+# the document and database will be realeased later!
